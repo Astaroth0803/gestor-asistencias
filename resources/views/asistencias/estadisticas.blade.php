@@ -109,7 +109,7 @@
         // Gráfico por Actividad
         const ctxPorActividad = document.getElementById('graficoPorActividad').getContext('2d');
         const graficoPorActividad = new Chart(ctxPorActividad, {
-            type: 'pie',
+            type: 'bar',
             data: {
                 labels: actividades,
                 datasets: [{

@@ -3,5 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <h1>Bienvenido al Gestor de Asistencias</h1>
+    <h1>Bienvenido al Centro Juvenil y Biblioteca las Mañanitas</h1>
+@endsection
+@section('sidebar')
 @endsection

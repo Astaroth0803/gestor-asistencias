@@ -38,11 +38,10 @@
                 </select>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Filtrar por Fecha</button> 
     </form>
 
 
-    <table class="asistencias-table">
+    <table class="is-bordered">
         <thead>
             <tr>
                 <th>Nombre</th>
@@ -68,10 +67,10 @@
     </table>
 
     <nav class="actions">
-        <button id="btn-reg-asis" ><a href="{{ route('asistencias.create') }}" >
+        <button  id="btn-reg-asis" ><a href="{{ route('asistencias.create') }}" >
             Nueva asistencia<a></button>
 
-            <button id="btn-ver-stats"><a href="{{ route('asistencias.estadisticas') }}">
+            <button  id="btn-ver-stats"><a href="{{ route('asistencias.estadisticas') }}">
                 Ver estadísticas de las asistencias<a></button>
     </nav>
 

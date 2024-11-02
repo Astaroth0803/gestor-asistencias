@@ -15,6 +15,6 @@
             <label for="nombre_actividad">Nombre de la Actividad:</label>
             <input type="text" id="nombre_actividad" name="nombre_actividad" required>
         </div>
-        <button type="submit" class="btn-submit">Crear Actividad</button>
+        <button type="submit" class="button button is-dange">Crear Actividad</button>
     </form>
 @endsection
