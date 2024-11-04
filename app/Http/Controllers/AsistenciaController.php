@@ -12,8 +12,10 @@ class AsistenciaController extends Controller
 {
     public function index(Request $request)
     {
+        // Creamos una consulta para las asistencias
         $query = Asistencia::query(); 
 
+        // Filtramos las asistencias según el parámetro 'filtro'
         if ($request->filled('filtro')) {
             switch ($request->filtro) {
                 case 'semana':
@@ -32,6 +34,7 @@ class AsistenciaController extends Controller
             }
         }
 
+        // Filtrar por rango de fechas si están presentes
         if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
             $query->whereBetween('fecha_asistencia', [
                 $request->fecha_inicio,
@@ -44,19 +47,73 @@ class AsistenciaController extends Controller
         if ($request->has('per_page')) {
             $request->session()->put('per_page', $request->input('per_page'));
         }
+
+        // Ejecutamos la consulta y obtenemos las asistencias paginadas
         $asistencias = $query->paginate($perPage);
 
+        // Devolvemos la vista con las asistencias
         return view('asistencias.index', compact('asistencias'));
     }
+    public function estadisticas()
+{
+    // Total de asistencias
+    $totalAsistencias = Asistencia::count();
 
+    // Total de asistencias del día de hoy
+    $totalAsistenciasHoy = Asistencia::whereDate('fecha_asistencia', Carbon::today())->count();
+
+    // Asistencias semanales
+    $asistenciasSemanales = Asistencia::select('actividad_id', DB::raw('count(*) as total'))
+        ->whereBetween('fecha_asistencia', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+        ->groupBy('actividad_id')
+        ->get();
+
+    // Asistencias mensuales
+    $asistenciasMensuales = Asistencia::select('actividad_id', DB::raw('count(*) as total'))
+        ->whereMonth('fecha_asistencia', Carbon::now()->month)
+        ->whereYear('fecha_asistencia', Carbon::now()->year)
+        ->groupBy('actividad_id')
+        ->get();
+
+    // Asistencias anuales
+    $asistenciasAnuales = Asistencia::select('actividad_id', DB::raw('count(*) as total'))
+        ->whereYear('fecha_asistencia', Carbon::now()->year)
+        ->groupBy('actividad_id')
+        ->get();
+
+    // Asistencias por actividad
+    $asistenciasPorActividad = Asistencia::select('actividad_id', DB::raw('count(*) as total'))
+        ->groupBy('actividad_id')
+        ->get();
+
+    // Obtener todas las actividades
+    $actividades = Actividad::all();
+
+    // Pasar las variables a la vista
+    return view('asistencias.estadisticas', compact(
+        'totalAsistencias',
+        'totalAsistenciasHoy',
+        'asistenciasSemanales',
+        'asistenciasMensuales',
+        'asistenciasAnuales',
+        'asistenciasPorActividad',
+        'actividades'
+    ));
+}
+
+    
+    // Método para crear nuevas asistencias (si es necesario)
     public function create()
     {
+        // Obtener todas las actividades para mostrarlas en la vista
         $actividades = Actividad::all();
         return view('asistencias.create', compact('actividades'));
     }
 
+    // Método para almacenar nuevas asistencias
     public function store(Request $request)
     {
+        // Validar los datos recibidos
         $request->validate([
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
@@ -66,6 +123,7 @@ class AsistenciaController extends Controller
             'actividad_id' => 'required|exists:actividades,id',
         ]);
 
+        // Crear una nueva asistencia
         Asistencia::create([
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
@@ -73,43 +131,10 @@ class AsistenciaController extends Controller
             'sexo' => $request->sexo,
             'sector' => $request->sector,
             'actividad_id' => $request->actividad_id,
-            'fecha_asistencia' => now(), 
+            'fecha_asistencia' => now(),
         ]);
 
+        // Redirigir con un mensaje de éxito
         return redirect()->route('asistencias.index')->with('success', 'Asistencia registrada correctamente.');
-    }
-
-    public function estadisticas()
-    {
-        $asistenciasSemanales = Asistencia::select('actividad_id', DB::raw('count(*) as total'))
-                                        ->whereBetween('fecha_asistencia', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-                                        ->groupBy('actividad_id')
-                                        ->get();
-    
-        $asistenciasMensuales = Asistencia::select('actividad_id', DB::raw('count(*) as total'))
-                                        ->whereMonth('fecha_asistencia', Carbon::now()->month)
-                                        ->whereYear('fecha_asistencia', Carbon::now()->year)
-                                        ->groupBy('actividad_id')
-                                        ->get();
-    
-        $asistenciasAnuales = Asistencia::select('actividad_id', DB::raw('count(*) as total'))
-                                        ->whereYear('fecha_asistencia', Carbon::now()->year)
-                                        ->groupBy('actividad_id')
-                                        ->get();
-    
-        $asistenciasPorActividad = Asistencia::select('actividad_id', DB::raw('count(*) as total'))
-                                            ->groupBy('actividad_id')
-                                            ->get();
-    
-        // Obtener todas las actividades para usar sus nombres en las etiquetas
-        $actividades = Actividad::all(); 
-    
-        return view('asistencias.estadisticas', compact(
-            'asistenciasSemanales', 
-            'asistenciasMensuales',
-            'asistenciasAnuales', 
-            'asistenciasPorActividad',
-            'actividades' 
-        ));
     }
 }

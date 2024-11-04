@@ -3,13 +3,15 @@
 @section('title', 'Actividades')
 
 @section('content')
-    <h1>Listado de Actividades</h1>
+    <h1 class="title">Listado de Actividades</h1>
 
     @if(session('success'))
-        <p class="success-message">{{ session('success') }}</p>
+        <div class="notification is-success">
+            {{ session('success') }}
+        </div>
     @endif
 
-    <table class="table is-fullwidthd"> 
+    <table class="table is-bordered" style="text-align: left">
         <thead>
             <tr>
                 <th>Nombre de la Actividad</th> 
@@ -18,14 +20,15 @@
         </thead>
         <tbody>
             @foreach($actividades as $actividad)
-                <tr style="text-align: left">
+                <tr>
                     <td>{{ $actividad->nombre_actividad }}</td> 
                     <td>
-                        <a href="{{ route('actividades.edit', $actividad->id) }}" class="button is-dark">Editar</a>
+                        <a href="{{ route('actividades.edit', $actividad->id) }}" class="button is-dark is-small">Editar</a>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-    <a href="{{ route('actividades.create') }}" class="button is-success">Crear nueva actividad</a>
+
+    <a href="{{ route('actividades.create') }}" class="button">Crear nueva actividad</a>
 @endsection

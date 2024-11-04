@@ -20,6 +20,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/asistencias/crear', [AsistenciaController::class, 'create'])->name('asistencias.create');
     Route::post('/asistencias', [AsistenciaController::class, 'store'])->name('asistencias.store');
     Route::get('/asistencias/estadisticas', [AsistenciaController::class, 'estadisticas'])->name('asistencias.estadisticas'); 
+    Route::get('/estadisticas', [AsistenciaController::class, 'mostrarEstadisticas'])->name('estadisticas');
+
 });
 
 
